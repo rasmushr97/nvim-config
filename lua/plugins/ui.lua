@@ -10,8 +10,9 @@ return {
   {
     "nvim-mini/mini.icons",
     opts = {
-      -- Use ASCII fallbacks so the file tree looks correct even without a Nerd Font.
-      style = "ascii",
+      -- Use real Nerd Font glyphs for file tree icons.
+      -- If these render as boxes, set your terminal font to a Nerd Font.
+      style = "glyph",
     },
   },
 }
