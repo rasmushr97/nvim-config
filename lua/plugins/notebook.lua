@@ -1,30 +1,45 @@
 return {
   {
-    "benlubas/molten-nvim",
-    version = "^1.0.0",
-    build = ":UpdateRemotePlugins",
-    lazy = false,
-    init = function()
-      vim.g.molten_auto_open_output = false
-      vim.g.molten_output_win_max_height = 20
-      vim.g.molten_wrap_output = true
-      -- Keep outputs visible inline after leaving the cell, notebook-style.
-      vim.g.molten_virt_text_output = true
-      vim.g.molten_virt_lines_off_by_1 = true
+    "Vigemus/iron.nvim",
+    ft = "python",
+    config = function()
+      local iron = require("iron.core")
+      local view = require("iron.view")
+      local common = require("iron.fts.common")
 
-      require("config.notebook").setup_autocmds()
+      local function python_command()
+        local python = require("config.python").python_path()
+
+        vim.fn.system({ python, "-c", "import IPython" })
+        if vim.v.shell_error == 0 then
+          return { python, "-m", "IPython", "--no-autoindent" }
+        end
+
+        return { python, "-i", "-q" }
+      end
+
+      iron.setup({
+        config = {
+          scratch_repl = true,
+          repl_definition = {
+            python = {
+              command = python_command,
+              format = common.bracketed_paste_python,
+            },
+          },
+          repl_open_cmd = view.right(80),
+        },
+        ignore_blank_lines = true,
+      })
     end,
     keys = {
-      { "<leader>mi", function() require("config.notebook").init() end, desc = "Initialize Molten", ft = "python" },
-      { "<leader>ml", "<cmd>MoltenEvaluateLine<cr>", desc = "Evaluate line", ft = "python" },
-      { "<leader>me", "<cmd>MoltenEvaluateOperator<cr>", desc = "Evaluate operator", ft = "python" },
-      { "<leader>me", ":<C-u>MoltenEvaluateVisual<cr>gv", desc = "Evaluate selection", mode = "v", ft = "python" },
-      { "<leader>mc", function() require("config.notebook").run_cell() end, desc = "Run Molten cell", ft = "python" },
-      { "<leader>mc", function() require("config.notebook").run_visual_cell() end, desc = "Run Molten cell", mode = "v", ft = "python" },
-      { "<leader>mr", "<cmd>MoltenReevaluateCell<cr>", desc = "Re-evaluate cell", ft = "python" },
-      { "<leader>mo", "<cmd>noautocmd MoltenEnterOutput<cr>", desc = "Open output", ft = "python" },
-      { "<leader>mh", "<cmd>MoltenHideOutput<cr>", desc = "Hide output", ft = "python" },
-      { "<leader>md", "<cmd>MoltenDelete<cr>", desc = "Delete cell", ft = "python" },
+      { "<leader>pi", "<cmd>IronRepl<cr>", desc = "Open Python REPL", ft = "python" },
+      { "<leader>pr", "<cmd>IronRestart<cr>", desc = "Restart Python REPL", ft = "python" },
+      { "<leader>pf", "<cmd>IronFocus<cr>", desc = "Focus Python REPL", ft = "python" },
+      { "<leader>ph", "<cmd>IronHide<cr>", desc = "Hide Python REPL", ft = "python" },
+      { "<leader>pl", function() require("config.notebook").send_line() end, desc = "Send line to REPL", ft = "python" },
+      { "<leader>pc", function() require("config.notebook").send_cell() end, desc = "Send # %% cell to REPL", ft = "python" },
+      { "<leader>pc", function() require("config.notebook").send_visual() end, desc = "Send selection to REPL", mode = "v", ft = "python" },
     },
   },
 }

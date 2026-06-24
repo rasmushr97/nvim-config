@@ -12,21 +12,33 @@ LazyVim-based Neovim setup with Python defaults.
 
 ## Notebook-style Python
 
-Molten.nvim is installed for Jupyter-kernel execution from regular Python files.
+Iron.nvim is installed for sending regular Python files to a right-side Python/IPython REPL.
 
-Initialize Molten with `<leader>mi`. This treats `# %%` comments as cell markers and defines all cells in the file, so plain Python percent-cell files from other people work without any local saved state. Then run code with:
+Use `# %%` comments as cell markers:
 
-- `<leader>ml` / `:MoltenEvaluateLine` runs the current line
-- visual `<leader>me` / `:MoltenEvaluateVisual` runs a selection
-- `<leader>me` / `:MoltenEvaluateOperator` runs an operator range
-- `<leader>mc` creates and runs a Molten cell from the current `# %%` section, paragraph, or visual selection
-- `<leader>mr` / `:MoltenReevaluateCell` reruns the active Molten cell
+```python
+# %%
+x = 1
+x + 2
+```
 
-For uv projects, install and register an ipykernel in the project environment, then choose that kernel in `:MoltenInit`:
+Keymaps:
+
+- `<leader>pi` opens the Python REPL
+- `<leader>pc` sends the current `# %%` cell or paragraph to the REPL
+- visual `<leader>pc` sends the selection to the REPL
+- `<leader>pl` sends the current line
+- `<leader>pr` restarts the REPL
+
+For richer interactive output, add IPython and configure Plotly to open in the browser:
 
 ```powershell
-uv add --dev ipykernel
-uv run python -m ipykernel install --user --name my-project --display-name "Python (my-project)"
+uv add --dev ipython
+```
+
+```python
+import plotly.io as pio
+pio.renderers.default = "browser"
 ```
 
 ## Test
