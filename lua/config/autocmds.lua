@@ -6,3 +6,12 @@
 --
 -- Or remove existing autocmds by their group name (which is prefixed with `lazyvim_` for the defaults)
 -- e.g. vim.api.nvim_del_augroup_by_name("lazyvim_wrap_spell")
+
+vim.api.nvim_create_autocmd("FileType", {
+  pattern = "python",
+  callback = function()
+    -- Do not continue comments automatically when pressing Enter or o/O.
+    -- This keeps `# %%` notebook cell markers from producing `# ` on the next line.
+    vim.opt_local.formatoptions:remove({ "r", "o" })
+  end,
+})
