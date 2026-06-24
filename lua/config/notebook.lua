@@ -39,22 +39,7 @@ local function is_percent_marker(line)
   return line:match("^%s*#%s*%%%%") ~= nil
 end
 
-function M.define_percent_cell()
-  local current = vim.api.nvim_win_get_cursor(0)[1]
-  local last = vim.fn.line("$")
-  local marker = nil
-
-  for line = current, 1, -1 do
-    if is_percent_marker(vim.fn.getline(line)) then
-      marker = line
-      break
-    end
-  end
-
-  if not marker then
-    return false
-  end
-
+local function percent_cell_bounds(marker, last)
   local next_marker = nil
   for line = marker + 1, last do
     if is_percent_marker(vim.fn.getline(line)) then
@@ -73,6 +58,52 @@ function M.define_percent_cell()
   while end_line >= start_line and vim.fn.getline(end_line):match("^%s*$") do
     end_line = end_line - 1
   end
+
+  return start_line, end_line
+end
+
+function M.define_all_percent_cells()
+  local last = vim.fn.line("$")
+  local count = 0
+
+  for line = 1, last do
+    if is_percent_marker(vim.fn.getline(line)) then
+      local start_line, end_line = percent_cell_bounds(line, last)
+      if start_line <= end_line and define_cell(start_line, end_line) then
+        count = count + 1
+      end
+    end
+  end
+
+  if count > 0 then
+    vim.notify(("Defined %d Molten cells"):format(count), vim.log.levels.INFO)
+  end
+
+  return count
+end
+
+function M.init()
+  vim.cmd("MoltenInit")
+  M.define_all_percent_cells()
+end
+
+function M.define_percent_cell()
+  local current = vim.api.nvim_win_get_cursor(0)[1]
+  local last = vim.fn.line("$")
+  local marker = nil
+
+  for line = current, 1, -1 do
+    if is_percent_marker(vim.fn.getline(line)) then
+      marker = line
+      break
+    end
+  end
+
+  if not marker then
+    return false
+  end
+
+  local start_line, end_line = percent_cell_bounds(marker, last)
 
   if start_line > end_line then
     vim.notify("No code in this # %% cell", vim.log.levels.WARN)

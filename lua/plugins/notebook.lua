@@ -12,7 +12,7 @@ return {
       vim.g.molten_virt_lines_off_by_1 = true
     end,
     keys = {
-      { "<leader>mi", "<cmd>MoltenInit<cr>", desc = "Initialize Molten", ft = "python" },
+      { "<leader>mi", function() require("config.notebook").init() end, desc = "Initialize Molten", ft = "python" },
       { "<leader>ml", "<cmd>MoltenEvaluateLine<cr>", desc = "Evaluate line", ft = "python" },
       { "<leader>me", "<cmd>MoltenEvaluateOperator<cr>", desc = "Evaluate operator", ft = "python" },
       { "<leader>me", ":<C-u>MoltenEvaluateVisual<cr>gv", desc = "Evaluate selection", mode = "v", ft = "python" },
