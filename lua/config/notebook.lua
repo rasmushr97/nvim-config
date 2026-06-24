@@ -56,8 +56,24 @@ local function define_cell(start_line, end_line, opts)
   return true
 end
 
-local function run_active_cell()
-  vim.cmd("MoltenReevaluateCell")
+local function evaluate_range(start_line, end_line)
+  if start_line > end_line then
+    start_line, end_line = end_line, start_line
+  end
+
+  local kernel = active_kernel()
+  if not kernel then
+    return false
+  end
+
+  local end_col = #vim.fn.getline(end_line) + 1
+  local ok, err = pcall(vim.fn.MoltenEvaluateRange, kernel, start_line, end_line, 1, end_col)
+  if not ok then
+    vim.notify("MoltenEvaluateRange failed: " .. tostring(err), vim.log.levels.ERROR)
+    return false
+  end
+
+  return true
 end
 
 function M.define_visual_cell()
@@ -65,9 +81,7 @@ function M.define_visual_cell()
 end
 
 function M.run_visual_cell()
-  if M.define_visual_cell() then
-    run_active_cell()
-  end
+  evaluate_range(vim.fn.getpos("'<")[2], vim.fn.getpos("'>")[2])
 end
 
 local function is_percent_marker(line)
@@ -145,7 +159,7 @@ function M.init(kernel)
   end)
 end
 
-function M.define_percent_cell()
+local function current_percent_cell_bounds()
   local current = vim.api.nvim_win_get_cursor(0)[1]
   local last = vim.fn.line("$")
   local marker = nil
@@ -158,10 +172,34 @@ function M.define_percent_cell()
   end
 
   if not marker then
-    return false
+    return nil
   end
 
-  local start_line, end_line = percent_cell_bounds(marker, last)
+  return percent_cell_bounds(marker, last)
+end
+
+local function current_paragraph_bounds()
+  local current = vim.api.nvim_win_get_cursor(0)[1]
+  local last = vim.fn.line("$")
+  local start_line = current
+  local end_line = current
+
+  while start_line > 1 and not vim.fn.getline(start_line - 1):match("^%s*$") do
+    start_line = start_line - 1
+  end
+
+  while end_line < last and not vim.fn.getline(end_line + 1):match("^%s*$") do
+    end_line = end_line + 1
+  end
+
+  return start_line, end_line
+end
+
+function M.define_percent_cell()
+  local start_line, end_line = current_percent_cell_bounds()
+  if not start_line then
+    return false
+  end
 
   if start_line > end_line then
     vim.notify("No code in this # %% cell", vim.log.levels.WARN)
@@ -176,26 +214,21 @@ function M.define_paragraph_cell()
     return true
   end
 
-  local current = vim.api.nvim_win_get_cursor(0)[1]
-  local last = vim.fn.line("$")
-  local start_line = current
-  local end_line = current
-
-  while start_line > 1 and not vim.fn.getline(start_line - 1):match("^%s*$") do
-    start_line = start_line - 1
-  end
-
-  while end_line < last and not vim.fn.getline(end_line + 1):match("^%s*$") do
-    end_line = end_line + 1
-  end
-
-  return define_cell(start_line, end_line)
+  return define_cell(current_paragraph_bounds())
 end
 
 function M.run_cell()
-  if M.define_paragraph_cell() then
-    run_active_cell()
+  local start_line, end_line = current_percent_cell_bounds()
+  if not start_line then
+    start_line, end_line = current_paragraph_bounds()
   end
+
+  if start_line > end_line then
+    vim.notify("No code in this cell", vim.log.levels.WARN)
+    return
+  end
+
+  evaluate_range(start_line, end_line)
 end
 
 function M.setup_autocmds()
