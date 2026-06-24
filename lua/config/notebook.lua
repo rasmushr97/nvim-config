@@ -82,9 +82,36 @@ function M.define_all_percent_cells()
   return count
 end
 
+function M.save()
+  pcall(vim.cmd, "MoltenSave")
+end
+
+function M.load()
+  return pcall(vim.cmd, "MoltenLoad")
+end
+
 function M.init()
-  vim.cmd("MoltenInit")
-  M.define_all_percent_cells()
+  -- Prefer Molten's own persisted state: MoltenLoad initializes the buffer and
+  -- restores cell locations/outputs as long as the file contents still match
+  -- the saved checksum. If no saved state exists, initialize normally and fall
+  -- back to recreating cells from # %% markers.
+  if not M.load() then
+    pcall(vim.cmd, "MoltenDeinit")
+    vim.cmd("MoltenInit")
+    M.define_all_percent_cells()
+  end
+end
+
+function M.setup_autocmds()
+  local group = vim.api.nvim_create_augroup("UserMoltenPersistence", { clear = true })
+
+  vim.api.nvim_create_autocmd({ "BufWritePost", "VimLeavePre" }, {
+    group = group,
+    pattern = "*.py",
+    callback = function()
+      M.save()
+    end,
+  })
 end
 
 function M.define_percent_cell()
