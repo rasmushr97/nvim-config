@@ -1,5 +1,27 @@
 local M = {}
 
+M.kernel = nil
+
+local function active_kernel(opts)
+  if M.kernel then
+    return M.kernel
+  end
+
+  local ok, kernels = pcall(vim.fn.MoltenRunningKernels, true)
+  kernels = ok and kernels or {}
+
+  if #kernels == 1 then
+    M.kernel = kernels[1]
+    return M.kernel
+  end
+
+  if #kernels > 1 and not (opts and opts.silent) then
+    vim.notify("Multiple Molten kernels are active. Re-run <leader>mi and choose a kernel.", vim.log.levels.ERROR)
+  end
+
+  return nil
+end
+
 local function define_cell(start_line, end_line, opts)
   opts = opts or {}
 
@@ -7,7 +29,14 @@ local function define_cell(start_line, end_line, opts)
     start_line, end_line = end_line, start_line
   end
 
-  local ok, err = pcall(vim.fn.MoltenDefineCell, start_line, end_line)
+  local kernel = active_kernel(opts)
+  local ok, err
+  if kernel then
+    ok, err = pcall(vim.fn.MoltenDefineCell, start_line, end_line, kernel)
+  else
+    ok, err = pcall(vim.fn.MoltenDefineCell, start_line, end_line)
+  end
+
   if not ok then
     if not opts.silent then
       vim.notify("MoltenDefineCell failed: " .. tostring(err), vim.log.levels.ERROR)
@@ -90,6 +119,7 @@ function M.define_all_percent_cells(opts)
 end
 
 local function init_with_kernel(kernel)
+  M.kernel = kernel
   vim.cmd(("MoltenInit %s"):format(kernel))
   M.define_all_percent_cells()
 end
