@@ -19,14 +19,38 @@ return {
       vim.g.molten_wrap_output = true
       vim.g.molten_virt_text_output = true
       vim.g.molten_virt_lines_off_by_1 = true
+
+      local function with_molten(callback)
+        require("lazy").load({ plugins = { "molten-nvim" } })
+        callback(require("config.notebook"))
+      end
+
+      vim.api.nvim_create_user_command("NotebookInit", function()
+        with_molten(function(notebook)
+          notebook.init()
+        end)
+      end, {})
+
+      vim.api.nvim_create_user_command("NotebookRunCell", function()
+        with_molten(function(notebook)
+          notebook.run_cell()
+        end)
+      end, {})
+
+      vim.api.nvim_create_user_command("NotebookRunLine", function()
+        with_molten(function(notebook)
+          notebook.run_line()
+        end)
+      end, {})
     end,
     keys = {
-      { "<leader>mi", "<cmd>MoltenInit<cr>", desc = "Initialize Molten", ft = "python" },
-      { "<leader>ml", "<cmd>MoltenEvaluateLine<cr>", desc = "Evaluate line", ft = "python" },
+      { "<leader>mi", function() require("config.notebook").init() end, desc = "Initialize Molten", ft = "python" },
+      { "<leader>mc", function() require("config.notebook").run_cell() end, desc = "Run # %% cell", ft = "python" },
+      { "<leader>ml", function() require("config.notebook").run_line() end, desc = "Evaluate line", ft = "python" },
       { "<leader>me", "<cmd>MoltenEvaluateOperator<cr>", desc = "Evaluate operator", ft = "python" },
-      { "<leader>me", ":<C-u>MoltenEvaluateVisual<cr>", desc = "Evaluate selection", mode = "v", ft = "python" },
+      { "<leader>me", function() require("config.notebook").run_visual() end, desc = "Evaluate selection", mode = "v", ft = "python" },
       { "<leader>mr", "<cmd>MoltenReevaluateCell<cr>", desc = "Re-evaluate cell", ft = "python" },
-      { "<leader>mo", "<cmd>MoltenShowOutput<cr>", desc = "Show output", ft = "python" },
+      { "<leader>mo", "<cmd>noautocmd MoltenEnterOutput<cr>", desc = "Open output", ft = "python" },
       { "<leader>mh", "<cmd>MoltenHideOutput<cr>", desc = "Hide output", ft = "python" },
       { "<leader>md", "<cmd>MoltenDelete<cr>", desc = "Delete cell", ft = "python" },
     },

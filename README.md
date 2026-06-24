@@ -14,7 +14,9 @@ LazyVim-based Neovim setup with Python defaults.
 
 Molten.nvim is installed for Jupyter-kernel execution from regular Python files.
 
-Use `# %%` markers for notebook-style cells, then initialize Molten with `<leader>mi` and run lines/selections with `<leader>ml` / visual `<leader>me`.
+Use `# %%` markers for notebook-style cells, then initialize Molten with `<leader>mi` and run cells/lines/selections with `<leader>mc` / `<leader>ml` / visual `<leader>me`.
+
+Commands are also available: `:NotebookInit`, `:NotebookRunCell`, and `:NotebookRunLine`.
 
 You still need a Python Jupyter kernel available in the environment you use, for example:
 
