@@ -14,14 +14,18 @@ LazyVim-based Neovim setup with Python defaults.
 
 Molten.nvim is installed for Jupyter-kernel execution from regular Python files.
 
-Use `# %%` markers for notebook-style cells, then initialize Molten with `<leader>mi` and run cells/lines/selections with `<leader>mc` / `<leader>ml` / visual `<leader>me`.
+Initialize Molten with `<leader>mi` / `:MoltenInit`, then run code with native Molten commands:
 
-Commands are also available: `:NotebookInit`, `:NotebookRunCell`, and `:NotebookRunLine`.
+- `<leader>ml` / `:MoltenEvaluateLine` runs the current line
+- visual `<leader>me` / `:MoltenEvaluateVisual` runs a selection
+- `<leader>me` / `:MoltenEvaluateOperator` runs an operator range
+- `<leader>mr` / `:MoltenReevaluateCell` reruns the active Molten cell
 
-`NotebookInit` uses the current project venv when one is active/detected. For uv projects, the project environment needs `ipykernel`:
+For uv projects, install and register an ipykernel in the project environment, then choose that kernel in `:MoltenInit`:
 
 ```powershell
-uv pip install --python .venv/Scripts/python.exe ipykernel
+uv add --dev ipykernel
+uv run python -m ipykernel install --user --name my-project --display-name "Python (my-project)"
 ```
 
 ## Test
