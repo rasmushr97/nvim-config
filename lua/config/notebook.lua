@@ -8,14 +8,31 @@ local function define_cell(start_line, end_line)
   local ok, err = pcall(vim.fn.MoltenDefineCell, start_line, end_line)
   if not ok then
     vim.notify("MoltenDefineCell failed: " .. tostring(err), vim.log.levels.ERROR)
-    return
+    return false
   end
 
-  vim.notify(("Molten cell defined: lines %d-%d"):format(start_line, end_line), vim.log.levels.INFO)
+  -- Molten commands operate on the active cell under the cursor. If the cursor
+  -- is on a # %% marker/comment, move it into the code cell we just defined.
+  local current = vim.api.nvim_win_get_cursor(0)[1]
+  if current < start_line or current > end_line then
+    vim.api.nvim_win_set_cursor(0, { start_line, 0 })
+  end
+
+  return true
+end
+
+local function run_active_cell()
+  vim.cmd("MoltenReevaluateCell")
 end
 
 function M.define_visual_cell()
-  define_cell(vim.fn.getpos("'<")[2], vim.fn.getpos("'>")[2])
+  return define_cell(vim.fn.getpos("'<")[2], vim.fn.getpos("'>")[2])
+end
+
+function M.run_visual_cell()
+  if M.define_visual_cell() then
+    run_active_cell()
+  end
 end
 
 local function is_percent_marker(line)
@@ -62,13 +79,12 @@ function M.define_percent_cell()
     return true
   end
 
-  define_cell(start_line, end_line)
-  return true
+  return define_cell(start_line, end_line)
 end
 
 function M.define_paragraph_cell()
   if M.define_percent_cell() then
-    return
+    return true
   end
 
   local current = vim.api.nvim_win_get_cursor(0)[1]
@@ -84,7 +100,13 @@ function M.define_paragraph_cell()
     end_line = end_line + 1
   end
 
-  define_cell(start_line, end_line)
+  return define_cell(start_line, end_line)
+end
+
+function M.run_cell()
+  if M.define_paragraph_cell() then
+    run_active_cell()
+  end
 end
 
 return M
