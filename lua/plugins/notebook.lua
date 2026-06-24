@@ -10,6 +10,8 @@ return {
       vim.g.molten_wrap_output = true
       vim.g.molten_virt_text_output = false
       vim.g.molten_virt_lines_off_by_1 = true
+
+      require("config.notebook").setup_autocmds()
     end,
     keys = {
       { "<leader>mi", function() require("config.notebook").init() end, desc = "Initialize Molten", ft = "python" },
