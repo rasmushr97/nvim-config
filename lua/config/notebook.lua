@@ -1,6 +1,23 @@
 local M = {}
 
 M.kernel = nil
+M.python_terminal = nil
+
+local function project_root(bufnr)
+  bufnr = bufnr or 0
+  local name = vim.api.nvim_buf_get_name(bufnr)
+  local start = name ~= "" and vim.fs.dirname(name) or vim.uv.cwd()
+
+  return vim.fs.root(start, {
+    "uv.lock",
+    "pyproject.toml",
+    "requirements.txt",
+    "setup.py",
+    "setup.cfg",
+    "pyrightconfig.json",
+    ".git",
+  }) or vim.uv.cwd()
+end
 
 local function active_kernel(opts)
   if M.kernel then
@@ -217,6 +234,10 @@ function M.define_paragraph_cell()
   return define_cell(current_paragraph_bounds())
 end
 
+local function lines_text(start_line, end_line)
+  return table.concat(vim.api.nvim_buf_get_lines(0, start_line - 1, end_line, false), "\n")
+end
+
 function M.run_cell()
   local start_line, end_line = current_percent_cell_bounds()
   if not start_line then
@@ -229,6 +250,87 @@ function M.run_cell()
   end
 
   evaluate_range(start_line, end_line)
+end
+
+local function terminal_is_valid()
+  return M.python_terminal
+    and M.python_terminal.job
+    and M.python_terminal.buf
+    and vim.api.nvim_buf_is_valid(M.python_terminal.buf)
+end
+
+function M.open_python_terminal()
+  if terminal_is_valid() then
+    vim.api.nvim_set_current_buf(M.python_terminal.buf)
+    return M.python_terminal.job
+  end
+
+  local root = project_root(0)
+  local python = require("config.python").python_path(root)
+
+  vim.cmd("botright vertical 80new")
+  local buf = vim.api.nvim_get_current_buf()
+  vim.bo[buf].buflisted = false
+  vim.bo[buf].filetype = "python_terminal"
+
+  local job = vim.fn.termopen({ python, "-q", "-i" }, {
+    cwd = root,
+    on_exit = function()
+      M.python_terminal = nil
+    end,
+  })
+
+  M.python_terminal = { buf = buf, job = job }
+  vim.cmd("startinsert")
+  return job
+end
+
+local function python_cell_runner(code)
+  return table.concat({
+    "import ast",
+    "__code = " .. vim.json.encode(code),
+    "__mod = ast.parse(__code, '<cell>', 'exec')",
+    "if __mod.body and isinstance(__mod.body[-1], ast.Expr):",
+    "    __expr = ast.Expression(__mod.body.pop().value)",
+    "    ast.fix_missing_locations(__mod)",
+    "    ast.fix_missing_locations(__expr)",
+    "    exec(compile(__mod, '<cell>', 'exec'))",
+    "    __value = eval(compile(__expr, '<cell>', 'eval'))",
+    "    if __value is not None:",
+    "        print(repr(__value))",
+    "else:",
+    "    exec(compile(__mod, '<cell>', 'exec'))",
+  }, "\n")
+end
+
+function M.send_to_python_terminal(code)
+  local job = M.open_python_terminal()
+  local command = "exec(" .. vim.json.encode(python_cell_runner(code)) .. ")\n"
+  vim.fn.chansend(job, command)
+end
+
+function M.run_cell_in_terminal()
+  local start_line, end_line = current_percent_cell_bounds()
+  if not start_line then
+    start_line, end_line = current_paragraph_bounds()
+  end
+
+  if start_line > end_line then
+    vim.notify("No code in this cell", vim.log.levels.WARN)
+    return
+  end
+
+  M.send_to_python_terminal(lines_text(start_line, end_line))
+end
+
+function M.run_visual_in_terminal()
+  local start_line = vim.fn.getpos("'<")[2]
+  local end_line = vim.fn.getpos("'>")[2]
+  if start_line > end_line then
+    start_line, end_line = end_line, start_line
+  end
+
+  M.send_to_python_terminal(lines_text(start_line, end_line))
 end
 
 function M.setup_autocmds()
