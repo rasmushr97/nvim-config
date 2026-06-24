@@ -20,8 +20,6 @@ Initialize Molten with `<leader>mi`. This treats `# %%` comments as cell markers
 - visual `<leader>me` / `:MoltenEvaluateVisual` runs a selection
 - `<leader>me` / `:MoltenEvaluateOperator` runs an operator range
 - `<leader>mc` creates and runs a Molten cell from the current `# %%` section, paragraph, or visual selection
-- `<leader>pt` opens a right-side Python terminal using the project Python/uv venv
-- `<leader>pc` sends the current `# %%` section, paragraph, or visual selection to that terminal
 - `<leader>mr` / `:MoltenReevaluateCell` reruns the active Molten cell
 
 For uv projects, install and register an ipykernel in the project environment, then choose that kernel in `:MoltenInit`:
