@@ -3,16 +3,7 @@ return {
     "benlubas/molten-nvim",
     version = "^1.0.0",
     build = ":UpdateRemotePlugins",
-    cmd = {
-      "MoltenInit",
-      "MoltenEvaluateLine",
-      "MoltenEvaluateOperator",
-      "MoltenEvaluateVisual",
-      "MoltenReevaluateCell",
-      "MoltenShowOutput",
-      "MoltenHideOutput",
-      "MoltenDelete",
-    },
+    lazy = false,
     init = function()
       vim.g.molten_auto_open_output = false
       vim.g.molten_output_win_max_height = 20
@@ -21,7 +12,6 @@ return {
       vim.g.molten_virt_lines_off_by_1 = true
 
       local function with_molten(callback)
-        require("lazy").load({ plugins = { "molten-nvim" } })
         callback(require("config.notebook"))
       end
 

@@ -51,6 +51,32 @@ function M.python_path(root)
   return python_in_venv(venv) or vim.fn.exepath("python") or vim.fn.exepath("python3") or "python"
 end
 
+function M.python_host_path()
+  local candidates = {}
+
+  if vim.env.NVIM_PYTHON_HOST_PROG and vim.env.NVIM_PYTHON_HOST_PROG ~= "" then
+    table.insert(candidates, vim.env.NVIM_PYTHON_HOST_PROG)
+  end
+
+  if is_windows and vim.env.USERPROFILE then
+    table.insert(candidates, vim.env.USERPROFILE .. "/scoop/apps/python/current/python.exe")
+  end
+
+  table.insert(candidates, vim.fn.exepath("python"))
+  table.insert(candidates, vim.fn.exepath("python3"))
+
+  for _, python in ipairs(candidates) do
+    if python and python ~= "" and exists(python) then
+      vim.fn.system({ python, "-c", "import pynvim" })
+      if vim.v.shell_error == 0 then
+        return vim.fs.normalize(python)
+      end
+    end
+  end
+
+  return nil
+end
+
 function M.activate(root)
   local venv = M.venv(root)
   local python = M.python_path(root)
@@ -65,10 +91,6 @@ function M.activate(root)
     if not path:lower():find(vim.pesc(bin:lower()), 1) then
       vim.env.PATH = bin .. path_sep .. path
     end
-  end
-
-  if python and python ~= "" then
-    vim.g.python3_host_prog = python
   end
 
   return python, venv
