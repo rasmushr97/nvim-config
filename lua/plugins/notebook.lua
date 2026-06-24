@@ -16,6 +16,8 @@ return {
       { "<leader>ml", "<cmd>MoltenEvaluateLine<cr>", desc = "Evaluate line", ft = "python" },
       { "<leader>me", "<cmd>MoltenEvaluateOperator<cr>", desc = "Evaluate operator", ft = "python" },
       { "<leader>me", ":<C-u>MoltenEvaluateVisual<cr>gv", desc = "Evaluate selection", mode = "v", ft = "python" },
+      { "<leader>mc", function() require("config.notebook").define_paragraph_cell() end, desc = "Create Molten cell", ft = "python" },
+      { "<leader>mc", function() require("config.notebook").define_visual_cell() end, desc = "Create Molten cell", mode = "v", ft = "python" },
       { "<leader>mr", "<cmd>MoltenReevaluateCell<cr>", desc = "Re-evaluate cell", ft = "python" },
       { "<leader>mo", "<cmd>noautocmd MoltenEnterOutput<cr>", desc = "Open output", ft = "python" },
       { "<leader>mh", "<cmd>MoltenHideOutput<cr>", desc = "Hide output", ft = "python" },

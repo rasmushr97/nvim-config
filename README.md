@@ -19,6 +19,7 @@ Initialize Molten with `<leader>mi` / `:MoltenInit`, then run code with native M
 - `<leader>ml` / `:MoltenEvaluateLine` runs the current line
 - visual `<leader>me` / `:MoltenEvaluateVisual` runs a selection
 - `<leader>me` / `:MoltenEvaluateOperator` runs an operator range
+- `<leader>mc` creates a Molten cell from the current paragraph or visual selection
 - `<leader>mr` / `:MoltenReevaluateCell` reruns the active Molten cell
 
 For uv projects, install and register an ipykernel in the project environment, then choose that kernel in `:MoltenInit`:
