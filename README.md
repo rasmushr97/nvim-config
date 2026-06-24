@@ -18,10 +18,10 @@ Use `# %%` markers for notebook-style cells, then initialize Molten with `<leade
 
 Commands are also available: `:NotebookInit`, `:NotebookRunCell`, and `:NotebookRunLine`.
 
-You still need a Python Jupyter kernel available in the environment you use, for example:
+`NotebookInit` uses the current project venv when one is active/detected. For uv projects, the project environment needs `ipykernel`:
 
 ```powershell
-uv pip install pynvim jupyter ipykernel
+uv pip install --python .venv/Scripts/python.exe ipykernel
 ```
 
 ## Test
