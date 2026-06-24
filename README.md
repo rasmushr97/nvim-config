@@ -10,6 +10,18 @@ LazyVim-based Neovim setup with Python defaults.
 - `ruff_format` and `ruff_organize_imports` on save through conform.nvim
 - `debugpy` for Python debugging
 
+## Notebook-style Python
+
+Molten.nvim is installed for Jupyter-kernel execution from regular Python files.
+
+Use `# %%` markers for notebook-style cells, then initialize Molten with `<leader>mi` and run lines/selections with `<leader>ml` / visual `<leader>me`.
+
+You still need a Python Jupyter kernel available in the environment you use, for example:
+
+```powershell
+uv pip install pynvim jupyter ipykernel
+```
+
 ## Test
 
 ```powershell
