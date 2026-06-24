@@ -5,6 +5,13 @@ return {
       keymap = {
         preset = "super-tab",
       },
+      completion = {
+        accept = {
+          auto_brackets = {
+            enabled = false,
+          },
+        },
+      },
     },
   },
 }
