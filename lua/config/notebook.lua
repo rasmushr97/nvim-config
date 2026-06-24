@@ -82,36 +82,30 @@ function M.define_all_percent_cells()
   return count
 end
 
-function M.save()
-  pcall(vim.cmd, "MoltenSave")
+local function init_with_kernel(kernel)
+  vim.cmd(("MoltenInit %s"):format(kernel))
+  M.define_all_percent_cells()
 end
 
-function M.load()
-  return pcall(vim.cmd, "MoltenLoad")
-end
-
-function M.init()
-  -- Prefer Molten's own persisted state: MoltenLoad initializes the buffer and
-  -- restores cell locations/outputs as long as the file contents still match
-  -- the saved checksum. If no saved state exists, initialize normally and fall
-  -- back to recreating cells from # %% markers.
-  if not M.load() then
-    pcall(vim.cmd, "MoltenDeinit")
-    vim.cmd("MoltenInit")
-    M.define_all_percent_cells()
+function M.init(kernel)
+  if kernel then
+    init_with_kernel(kernel)
+    return
   end
-end
 
-function M.setup_autocmds()
-  local group = vim.api.nvim_create_augroup("UserMoltenPersistence", { clear = true })
+  local ok, kernels = pcall(vim.fn.MoltenAvailableKernels)
+  kernels = ok and kernels or {}
 
-  vim.api.nvim_create_autocmd({ "BufWritePost", "VimLeavePre" }, {
-    group = group,
-    pattern = "*.py",
-    callback = function()
-      M.save()
-    end,
-  })
+  if #kernels == 1 then
+    init_with_kernel(kernels[1])
+    return
+  end
+
+  vim.ui.select(kernels, { prompt = "Molten kernel" }, function(choice)
+    if choice then
+      init_with_kernel(choice)
+    end
+  end)
 end
 
 function M.define_percent_cell()

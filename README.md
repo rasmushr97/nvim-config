@@ -14,13 +14,12 @@ LazyVim-based Neovim setup with Python defaults.
 
 Molten.nvim is installed for Jupyter-kernel execution from regular Python files.
 
-Initialize Molten with `<leader>mi`. This loads saved Molten cells/outputs when available, otherwise it recreates cells from `# %%` markers. Cells/outputs are saved automatically when Python files are written. Then run code with:
+Initialize Molten with `<leader>mi`. This treats `# %%` comments as cell markers and defines all cells in the file, so plain Python percent-cell files from other people work without any local saved state. Then run code with:
 
 - `<leader>ml` / `:MoltenEvaluateLine` runs the current line
 - visual `<leader>me` / `:MoltenEvaluateVisual` runs a selection
 - `<leader>me` / `:MoltenEvaluateOperator` runs an operator range
 - `<leader>mc` creates and runs a Molten cell from the current `# %%` section, paragraph, or visual selection
-- `<leader>ms` saves Molten cell/output state
 - `<leader>mr` / `:MoltenReevaluateCell` reruns the active Molten cell
 
 For uv projects, install and register an ipykernel in the project environment, then choose that kernel in `:MoltenInit`:
