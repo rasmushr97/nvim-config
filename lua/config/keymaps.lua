@@ -6,3 +6,5 @@
 -- jump/search, but normal Vim uses `s` as `cl` and `S` as `cc`.
 vim.keymap.set("n", "s", "cl", { desc = "Substitute character" })
 vim.keymap.set("n", "S", "cc", { desc = "Substitute line" })
+vim.keymap.set("x", "s", "c", { desc = "Substitute selection" })
+vim.keymap.set("x", "S", "c", { desc = "Substitute selection" })
