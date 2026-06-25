@@ -1,6 +1,6 @@
 # Neovim config
 
-LazyVim-based Neovim setup with Python defaults.
+LazyVim-based Neovim setup with Python defaults and Rust tools.
 
 ## Python defaults
 
@@ -9,6 +9,12 @@ LazyVim-based Neovim setup with Python defaults.
 - `ruff` LSP/linting
 - `ruff_format` and `ruff_organize_imports` on save through conform.nvim
 - `debugpy` for Python debugging
+
+## Rust defaults
+
+- LazyVim Rust extra enabled
+- `rust-analyzer` LSP installed through Mason
+- `codelldb` debugger installed through Mason
 
 ## Notebook-style Python
 
