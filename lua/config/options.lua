@@ -10,6 +10,8 @@ vim.opt.smoothscroll = false
 vim.diagnostic.config({
   virtual_text = false,
   virtual_lines = false,
+  update_in_insert = false,
+  severity_sort = true,
   float = {
     border = "rounded",
     source = "if_many",

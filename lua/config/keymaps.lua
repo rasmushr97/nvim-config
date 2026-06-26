@@ -9,6 +9,13 @@ vim.keymap.set("n", "S", "cc", { desc = "Substitute line" })
 vim.keymap.set("x", "s", "c", { desc = "Substitute selection" })
 vim.keymap.set("x", "S", "c", { desc = "Substitute selection" })
 
+vim.keymap.set("n", "<leader>cd", function()
+  vim.diagnostic.open_float(nil, {
+    scope = "cursor",
+    focus = true,
+  })
+end, { desc = "Show line diagnostics" })
+
 vim.keymap.set("n", "<leader>yd", function()
   local bufnr = 0
   local lnum = vim.api.nvim_win_get_cursor(0)[1] - 1

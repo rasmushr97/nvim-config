@@ -16,19 +16,6 @@ vim.api.nvim_create_autocmd("FileType", {
   end,
 })
 
-local diagnostics_float = vim.api.nvim_create_augroup("user_diagnostics_float", { clear = true })
-
-vim.api.nvim_create_autocmd("CursorHold", {
-  group = diagnostics_float,
-  callback = function()
-    vim.diagnostic.open_float(nil, {
-      scope = "cursor",
-      focus = false,
-      close_events = { "CursorMoved", "CursorMovedI", "BufHidden", "InsertCharPre", "WinLeave" },
-    })
-  end,
-})
-
 local inlay_hints = vim.api.nvim_create_augroup("user_inlay_hints", { clear = true })
 
 local function set_inlay_hints(enabled, bufnr)
