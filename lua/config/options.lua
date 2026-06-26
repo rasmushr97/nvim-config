@@ -6,6 +6,12 @@
 vim.g.snacks_animate = false
 vim.opt.smoothscroll = false
 
+-- Show diagnostics as virtual lines instead of appending them at the end of code lines.
+vim.diagnostic.config({
+  virtual_text = false,
+  virtual_lines = true,
+})
+
 -- Python defaults. LazyVim reads these before loading the Python extra.
 vim.g.lazyvim_python_lsp = "basedpyright"
 vim.g.lazyvim_python_ruff = "ruff"
