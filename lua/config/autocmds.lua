@@ -15,3 +15,16 @@ vim.api.nvim_create_autocmd("FileType", {
     vim.opt_local.formatoptions:remove({ "r", "o" })
   end,
 })
+
+local diagnostics_float = vim.api.nvim_create_augroup("user_diagnostics_float", { clear = true })
+
+vim.api.nvim_create_autocmd("CursorHold", {
+  group = diagnostics_float,
+  callback = function()
+    vim.diagnostic.open_float(nil, {
+      scope = "cursor",
+      focus = false,
+      close_events = { "CursorMoved", "CursorMovedI", "BufHidden", "InsertCharPre", "WinLeave" },
+    })
+  end,
+})

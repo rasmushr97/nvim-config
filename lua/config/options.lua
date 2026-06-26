@@ -6,10 +6,14 @@
 vim.g.snacks_animate = false
 vim.opt.smoothscroll = false
 
--- Show diagnostics as virtual lines instead of appending them at the end of code lines.
+-- Do not append diagnostics to code lines; show them in a hover dialog instead.
 vim.diagnostic.config({
   virtual_text = false,
-  virtual_lines = true,
+  virtual_lines = false,
+  float = {
+    border = "rounded",
+    source = "if_many",
+  },
 })
 
 -- Python defaults. LazyVim reads these before loading the Python extra.
