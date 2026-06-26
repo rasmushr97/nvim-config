@@ -10,6 +10,8 @@ vim.opt.smoothscroll = false
 vim.g.lazyvim_python_lsp = "basedpyright"
 vim.g.lazyvim_python_ruff = "ruff"
 
+require("config.cargo").setup()
+
 local python = require("config.python")
 
 -- Keep Neovim's Python provider on a Python with pynvim installed. Project
