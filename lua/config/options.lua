@@ -20,7 +20,9 @@ vim.diagnostic.config({
 vim.g.lazyvim_python_lsp = "basedpyright"
 vim.g.lazyvim_python_ruff = "ruff"
 
-require("config.cargo").setup()
+local cargo = require("config.cargo")
+cargo.setup()
+cargo.setup_autocmds()
 
 local python = require("config.python")
 

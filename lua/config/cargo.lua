@@ -46,4 +46,26 @@ function M.setup()
   end
 end
 
+function M.reload_rust_analyzer_workspace()
+  for _, client in ipairs(vim.lsp.get_clients({ name = "rust_analyzer" })) do
+    client:request("workspace/executeCommand", {
+      command = "rust-analyzer.reloadWorkspace",
+      arguments = {},
+    })
+  end
+end
+
+function M.setup_autocmds()
+  local group = vim.api.nvim_create_augroup("user_cargo", { clear = true })
+
+  vim.api.nvim_create_autocmd("BufWritePost", {
+    group = group,
+    pattern = { "Cargo.toml", "Cargo.lock" },
+    callback = function()
+      -- rust-analyzer can miss newly added crates until its workspace is reloaded.
+      vim.schedule(M.reload_rust_analyzer_workspace)
+    end,
+  })
+end
+
 return M
