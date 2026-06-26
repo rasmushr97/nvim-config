@@ -1,8 +1,6 @@
 return {
-  -- LazyVim's Python extra provides the baseline Python IDE setup.
+  -- LazyVim's Python extra is enabled in lazyvim.json.
   -- This file keeps the user-specific Python choices explicit and easy for agents to modify.
-  { import = "lazyvim.plugins.extras.lang.python" },
-
   {
     "mason-org/mason.nvim",
     opts = {

@@ -32,7 +32,7 @@ local function prepend_path(dir)
 end
 
 function M.setup()
-  local home = normalize(vim.env.USERPROFILE or vim.env.HOME or vim.fn.expand("~"))
+  local home = normalize((is_windows and vim.env.USERPROFILE or vim.env.HOME) or vim.fn.expand("~"))
   local cargo_home = normalize(vim.env.CARGO_HOME) or (home and normalize(home .. "/.cargo"))
   local rustup_home = normalize(vim.env.RUSTUP_HOME) or (home and normalize(home .. "/.rustup"))
 

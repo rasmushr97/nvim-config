@@ -38,7 +38,7 @@ Keymaps:
 
 For richer interactive output, add IPython and configure Plotly to open in the browser:
 
-```powershell
+```sh
 uv add --dev ipython
 ```
 
@@ -49,11 +49,27 @@ pio.renderers.default = "browser"
 
 ## Test
 
+Linux/macOS:
+
+```sh
+./scripts/test.sh
+```
+
+Windows PowerShell:
+
 ```powershell
 pwsh ./scripts/test.ps1
 ```
 
 ## Update plugins
+
+Linux/macOS:
+
+```sh
+./scripts/sync.sh
+```
+
+Windows PowerShell:
 
 ```powershell
 pwsh ./scripts/sync.ps1
