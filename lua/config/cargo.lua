@@ -66,6 +66,32 @@ function M.setup_autocmds()
       vim.schedule(M.reload_rust_analyzer_workspace)
     end,
   })
+
+  vim.api.nvim_create_user_command("RustAnalyzerReload", function()
+    M.reload_rust_analyzer_workspace()
+    vim.notify("Reloaded rust-analyzer workspace")
+  end, { desc = "Reload rust-analyzer workspace" })
+
+  vim.api.nvim_create_user_command("LspRestart", function()
+    local clients = vim.lsp.get_clients({ bufnr = 0 })
+    if vim.tbl_isempty(clients) then
+      vim.notify("No active LSP clients for this buffer", vim.log.levels.INFO)
+      return
+    end
+
+    for _, client in ipairs(clients) do
+      client:stop(true)
+    end
+
+    vim.defer_fn(function()
+      if vim.fn.exists(":LspStart") == 2 then
+        vim.cmd("silent! LspStart")
+      else
+        vim.cmd("silent! edit")
+        vim.cmd("silent! doautocmd <nomodeline> FileType")
+      end
+    end, 200)
+  end, { desc = "Restart LSP clients for the current buffer" })
 end
 
 return M
