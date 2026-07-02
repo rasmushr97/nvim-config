@@ -6,6 +6,9 @@
 vim.g.snacks_animate = false
 vim.opt.smoothscroll = false
 
+-- Make physical mouse-wheel ticks less jumpy.
+vim.opt.mousescroll = { "ver:1", "hor:2" }
+
 -- Do not append diagnostics to code lines; show them in a hover dialog instead.
 vim.diagnostic.config({
   virtual_text = false,

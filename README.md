@@ -47,6 +47,27 @@ import plotly.io as pio
 pio.renderers.default = "browser"
 ```
 
+## Setup
+
+Linux/macOS:
+
+```sh
+./scripts/setup.sh
+```
+
+This links `zellij/config.kdl` to `~/.config/zellij/config.kdl` if no Zellij config already exists, then installs `ripgrep` and JetBrains Mono Nerd Font. After running it, set your terminal font to `JetBrainsMono Nerd Font Mono` so Neovim icons render correctly.
+
+## Zellij
+
+The repo-managed Zellij config lives at `zellij/config.kdl`.
+
+If `~/.config/zellij/config.kdl` already exists, `./scripts/setup.sh` leaves it unchanged. To use the repo config manually:
+
+```sh
+mkdir -p ~/.config/zellij
+ln -s "$PWD/zellij/config.kdl" ~/.config/zellij/config.kdl
+```
+
 ## Test
 
 Linux/macOS:

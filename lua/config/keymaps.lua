@@ -9,6 +9,9 @@ vim.keymap.set("n", "S", "cc", { desc = "Substitute line" })
 vim.keymap.set("x", "s", "c", { desc = "Substitute selection" })
 vim.keymap.set("x", "S", "c", { desc = "Substitute selection" })
 
+vim.keymap.set({ "n", "x" }, "<C-e>", "3<C-e>", { desc = "Scroll down faster" })
+vim.keymap.set({ "n", "x" }, "<C-y>", "3<C-y>", { desc = "Scroll up faster" })
+
 vim.keymap.set("n", "<leader>cd", function()
   vim.diagnostic.open_float(nil, {
     scope = "cursor",

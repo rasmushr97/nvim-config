@@ -22,6 +22,7 @@ local function project_root(bufnr)
   local start = name ~= "" and vim.fs.dirname(name) or vim.uv.cwd()
 
   return vim.fs.root(start, {
+    ".venv",
     "uv.lock",
     "pyproject.toml",
     "requirements.txt",
@@ -33,14 +34,14 @@ local function project_root(bufnr)
 end
 
 function M.venv(root)
-  if vim.env.VIRTUAL_ENV and python_in_venv(vim.env.VIRTUAL_ENV) then
-    return vim.fs.normalize(vim.env.VIRTUAL_ENV)
-  end
-
   root = root or project_root(0)
   local local_venv = root and (root .. "/.venv") or nil
   if python_in_venv(local_venv) then
     return vim.fs.normalize(local_venv)
+  end
+
+  if vim.env.VIRTUAL_ENV and python_in_venv(vim.env.VIRTUAL_ENV) then
+    return vim.fs.normalize(vim.env.VIRTUAL_ENV)
   end
 
   return nil
